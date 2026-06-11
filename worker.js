@@ -1790,8 +1790,8 @@ button.text-gray-400:hover{background:transparent!important;color:var(--text-str
   .gmail-mail-main{grid-template-columns:minmax(0,1fr)}
   .gmail-mail-side{flex-direction:row;align-items:center;justify-content:space-between;min-width:0;padding-left:0}
 }
-.hidden{display:none!important}
-</style>`;
+
+    .hidden{display:none!important}</style>`;
 
 const renderSharedThemeRuntimeScript = () => `<script>
 function themePreferenceValue(){
@@ -1851,7 +1851,6 @@ const renderPostThemeOverrides = () => `<style>
 thead.bg-gray-900,thead.bg-gray-900\/80{background:var(--bg-muted)!important;color:var(--text-muted)!important;border-color:var(--border-subtle)!important}
 tbody.divide-y.divide-gray-700>tr,tbody.divide-y.divide-gray-800>tr{border-color:var(--border-subtle)!important}
 .hover\:bg-gray-800:hover{background:var(--bg-muted)!important}
-.hidden{display:none!important}
 </style>`;
 
 const renderUserHTML = (sitekey, bypassTurnstile = false) => `
@@ -1939,8 +1938,8 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
 .text-emerald-300.font-mono{color:var(--accent-primary)!important}
 .text-rose-300{color:var(--danger)!important}
 .min-h-\[160px\]{border-radius:.56rem;background:#f8fafd}
-    .hidden{display:none!important}
-</style>
+    
+    .hidden{display:none!important}</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen overflow-hidden">
@@ -3041,8 +3040,8 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
 .gmail-admin-card-main{gap:.24rem!important}
 .gmail-admin-meta-line{line-height:1.48!important}
 .gmail-user-copy,.gmail-admin-copy,.gmail-admin-section-copy,.workspace-section-copy{color:#5f6368!important}
-    .hidden{display:none!important}
-</style>
+    
+    .hidden{display:none!important}</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen p-4 flex justify-center items-center">

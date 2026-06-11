@@ -1791,7 +1791,7 @@ button.text-gray-400:hover{background:transparent!important;color:var(--text-str
   .gmail-mail-side{flex-direction:row;align-items:center;justify-content:space-between;min-width:0;padding-left:0}
 }
 
-    .hidden{display:none!important}</style>`;
+    #booting-panel.hidden,#login-panel.hidden,#dashboard-panel.hidden{display:none!important}</style>`;
 
 const renderSharedThemeRuntimeScript = () => `<script>
 function themePreferenceValue(){
@@ -1939,7 +1939,7 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
 .text-rose-300{color:var(--danger)!important}
 .min-h-\[160px\]{border-radius:.56rem;background:#f8fafd}
     
-    .hidden{display:none!important}</style>
+    #booting-panel.hidden,#login-panel.hidden,#dashboard-panel.hidden{display:none!important}</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen overflow-hidden">
@@ -3041,7 +3041,7 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
 .gmail-admin-meta-line{line-height:1.48!important}
 .gmail-user-copy,.gmail-admin-copy,.gmail-admin-section-copy,.workspace-section-copy{color:#5f6368!important}
     
-    .hidden{display:none!important}</style>
+    #booting-panel.hidden,#login-panel.hidden,#dashboard-panel.hidden{display:none!important}</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen p-4 flex justify-center items-center">

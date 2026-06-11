@@ -2491,20 +2491,37 @@ function renderRouteList(routes, availableDestinations, routeDestWidthCh, totalR
         applyThemePreference(getStoredThemePreference());
         watchSystemThemeChange();
 
-        window.onload = async function() {
+        function bootApp() {
             setupRouteSearch();
             window.addEventListener('resize', syncInboxResponsiveView);
-            await loadPublicConfig();
-            var session = await fetch('/api/check-session');
-            document.getElementById('booting-panel').classList.add('hidden');
-            if (session.ok) {
-                document.getElementById('auth-panel').classList.add('hidden');
-                document.getElementById('dashboard-panel').classList.remove('hidden');
-                await loadDashboard();
-            } else {
+            loadPublicConfig().then(function() {
+                var ac = new AbortController();
+                var to = setTimeout(function(){ ac.abort(); }, 10000);
+                fetch('/api/check-session', {signal: ac.signal}).then(function(session) {
+                    clearTimeout(to);
+                    document.getElementById('booting-panel').classList.add('hidden');
+                    if (session.ok) {
+                        document.getElementById('auth-panel').classList.add('hidden');
+                        document.getElementById('dashboard-panel').classList.remove('hidden');
+                        loadDashboard();
+                    } else {
+                        document.getElementById('auth-panel').classList.remove('hidden');
+                    }
+                }).catch(function() {
+                    clearTimeout(to);
+                    document.getElementById('booting-panel').classList.add('hidden');
+                    document.getElementById('auth-panel').classList.remove('hidden');
+                });
+            }).catch(function() {
+                document.getElementById('booting-panel').classList.add('hidden');
                 document.getElementById('auth-panel').classList.remove('hidden');
-            }
-        };
+            });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootApp);
+        } else {
+            bootApp();
+        }
         function switchTab(m) {
             mode = m;
             document.getElementById('submit-btn').innerText = m==='login'?'登录':'注册';
@@ -3052,6 +3069,7 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
             <span class="auth-shell-badge">管理工作区</span>
             <div class="text-strong text-lg font-semibold">正在检查登录状态</div>
             <div class="auth-shell-copy">正在恢复域名、邀请码和用户管理状态。</div>
+            <div id="booting-error" class="hidden mt-4 p-3 rounded-lg bg-rose-900/30 border border-rose-800 text-rose-300 text-sm">连接失败，<a href="#" class="underline hover:text-rose-200" onclick="location.reload()">点击重试</a></div></div>
         </div>
     </div>
 
@@ -3275,25 +3293,46 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
         applyThemePreference(getStoredThemePreference());
         watchSystemThemeChange();
 
-        window.onload = async function() {
+        function bootAdmin() {
             var booting = document.getElementById('booting-panel');
             var loginPanel = document.getElementById('login-panel');
             var dashboardPanel = document.getElementById('dashboard-panel');
-            try {
-                var ac = new AbortController();var to = setTimeout(function(){ac.abort();},10000);try {var session = await fetch(basePath+'/config',{signal:ac.signal});}finally{clearTimeout(to);}
-                if (session.ok) {
-                    loginPanel.classList.add('hidden');
-                    dashboardPanel.classList.remove('hidden');
-                    loadConfigs(); syncDomains(); loadUsers(1); loadInvites();
-                } else {
+            var safetyTimer = setTimeout(function() {
+                if (booting && !booting.classList.contains('hidden')) {
                     loginPanel.classList.remove('hidden');
+                    booting.classList.add('hidden');
                 }
-            } catch (_) {
-                loginPanel.classList.remove('hidden');
-            } finally {
-                booting.classList.add('hidden');
-            }
-        };
+            }, 12000);
+            (async function() {
+                try {
+                    var ac = new AbortController();
+                    var to = setTimeout(function(){ ac.abort(); }, 10000);
+                    var session;
+                    try {
+                        session = await fetch(basePath+'/config', {signal: ac.signal});
+                    } finally {
+                        clearTimeout(to);
+                    }
+                    clearTimeout(safetyTimer);
+                    if (session.ok) {
+                        loginPanel.classList.add('hidden');
+                        dashboardPanel.classList.remove('hidden');
+                        loadConfigs(); syncDomains(); loadUsers(1); loadInvites();
+                    } else {
+                        loginPanel.classList.remove('hidden');
+                    }
+                } catch (_) {
+                    loginPanel.classList.remove('hidden');
+                } finally {
+                    booting.classList.add('hidden');
+                }
+            })();
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootAdmin);
+        } else {
+            bootAdmin();
+        }
         function nav(tab){
             ['domains','invites','users'].forEach(function(name){
                 document.getElementById('view-'+name).style.display = tab===name?'block':'none';
@@ -3531,7 +3570,7 @@ export default {
 
       if (path === '/favicon.ico') return emptyResponse(204);
       if (path === '/') return htmlResponse(renderUserHTML(env.TURNSTILE_SITEKEY, turnstileBypass));
-      if (path === adminPath) return htmlResponse(renderAdminHTML(adminPath, env.TURNSTILE_SITEKEY, turnstileBypass));
+      if (path === adminPath) return htmlResponse(renderAdminHTML(adminPath, env.TURNSTILE_SITEKEY, turnstileBypass), {'Cache-Control':'no-cache,no-store,must-revalidate'});
       if (path === '/api/public-config' && method === 'GET') return jsonRes(await getPublicConfig(db, cfg));
 
       const verifyTurnstile = async(t, ip) => {

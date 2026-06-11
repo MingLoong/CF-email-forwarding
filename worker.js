@@ -1,5 +1,5 @@
-// ==========================================
-// 0. 鍏变韩閰嶇疆涓庡伐鍏?
+﻿// ==========================================
+// 0. 共享配置与工具
 // ==========================================
 const DURATION_OPTIONS = [
   { value: '1', label: '1 小时' },
@@ -915,10 +915,10 @@ const attachmentStatusText = (status) => {
   if (!parts.length) return '';
   const labels = [];
   if (parts.includes('r2_missing')) labels.push('\u9644\u4ef6\u5b58\u50a8\u672a\u7ed1\u5b9a\uff0c\u9644\u4ef6\u672a\u4fdd\u5b58');
-  if (parts.includes('count_limited')) labels.push('閮ㄥ垎闄勪欢鍥犳暟閲忚秴闄愭湭淇濆瓨');
-  if (parts.includes('size_limited')) labels.push('閮ㄥ垎闄勪欢鍥犲ぇ灏忚秴闄愭湭淇濆瓨');
+  if (parts.includes('count_limited')) labels.push('部分附件因数量超限未保存');
+  if (parts.includes('size_limited')) labels.push('部分附件因大小超限未保存');
   if (parts.includes('storage_limited')) labels.push('\u90e8\u5206\u65e7\u9644\u4ef6\u56e0\u5b58\u50a8\u7a7a\u95f4\u9650\u5236\u5df2\u81ea\u52a8\u6e05\u7406');
-  if (parts.includes('save_failed')) labels.push('閮ㄥ垎闄勪欢淇濆瓨澶辫触');
+  if (parts.includes('save_failed')) labels.push('部分附件保存失败');
   return labels.join('\uff1b');
 };
 
@@ -1070,7 +1070,7 @@ const requireEmailWorkerName = (env) => {
     if (/^https?:\/\//i.test(workerName)) workerName = new URL(workerName).hostname;
   } catch (_) {}
   if (/\.workers\.dev$/i.test(workerName)) workerName = workerName.split('.')[0] || workerName;
-  if (!workerName) return {ok: false, error: '璇峰厛閰嶇疆 EMAIL_WORKER_NAME锛屾墠鑳藉紑鍚珯鍐呮敹浠剁鍚屾'};
+  if (!workerName) return {ok: false, error: '请先配置 EMAIL_WORKER_NAME，才能开启站内收件箱同步'};
   return {ok: true, value: workerName};
 };
 
@@ -1078,7 +1078,7 @@ const buildEmailRouteRule = (env, routeAddress, targetEmail, userId, tag, inboxE
   const enabled = isTruthyFlag(inboxEnabled);
   const workerName = enabled ? requireEmailWorkerName(env) : {ok: true, value: ''};
   if (!workerName.ok) return workerName;
-  if (!enabled && !targetEmail) return {ok: false, error: '璇烽€夋嫨杞彂鐩爣閭'};
+  if (!enabled && !targetEmail) return {ok: false, error: '请选择转发目标邮箱'};
   return {
     ok: true,
     value: {
@@ -1354,7 +1354,7 @@ const handleInboundEmail = async (message, env) => {
 };
 
 // ==========================================
-// 1. 鏅€氱敤鎴风綉椤?HTML
+// 1. 普通用户网页 HTML
 // ==========================================
 const renderThemeBootstrapScript = () => `<script>(function(){document.documentElement.dataset.theme='light';document.documentElement.dataset.themePreference='light';try{localStorage.setItem('themePreference','light');}catch(_){};})();</script>`;
 
@@ -1790,6 +1790,7 @@ button.text-gray-400:hover{background:transparent!important;color:var(--text-str
   .gmail-mail-main{grid-template-columns:minmax(0,1fr)}
   .gmail-mail-side{flex-direction:row;align-items:center;justify-content:space-between;min-width:0;padding-left:0}
 }
+.hidden{display:none!important}
 </style>`;
 
 const renderSharedThemeRuntimeScript = () => `<script>
@@ -1850,6 +1851,7 @@ const renderPostThemeOverrides = () => `<style>
 thead.bg-gray-900,thead.bg-gray-900\/80{background:var(--bg-muted)!important;color:var(--text-muted)!important;border-color:var(--border-subtle)!important}
 tbody.divide-y.divide-gray-700>tr,tbody.divide-y.divide-gray-800>tr{border-color:var(--border-subtle)!important}
 .hover\:bg-gray-800:hover{background:var(--bg-muted)!important}
+.hidden{display:none!important}
 </style>`;
 
 const renderUserHTML = (sitekey, bypassTurnstile = false) => `
@@ -1937,7 +1939,8 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
 .text-emerald-300.font-mono{color:var(--accent-primary)!important}
 .text-rose-300{color:var(--danger)!important}
 .min-h-\[160px\]{border-radius:.56rem;background:#f8fafd}
-    </style>
+    .hidden{display:none!important}
+</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen overflow-hidden">
@@ -3038,7 +3041,8 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
 .gmail-admin-card-main{gap:.24rem!important}
 .gmail-admin-meta-line{line-height:1.48!important}
 .gmail-user-copy,.gmail-admin-copy,.gmail-admin-section-copy,.workspace-section-copy{color:#5f6368!important}
-    </style>
+    .hidden{display:none!important}
+</style>
 
 </head>
 <body class="app-shell font-sans min-h-screen p-4 flex justify-center items-center">
@@ -3277,7 +3281,7 @@ body{background:var(--bg-page)!important;color:var(--text-strong)!important}
             var loginPanel = document.getElementById('login-panel');
             var dashboardPanel = document.getElementById('dashboard-panel');
             try {
-                var session = await fetch(basePath+'/config');
+                var ac = new AbortController();var to = setTimeout(function(){ac.abort();},10000);try {var session = await fetch(basePath+'/config',{signal:ac.signal});}finally{clearTimeout(to);}
                 if (session.ok) {
                     loginPanel.classList.add('hidden');
                     dashboardPanel.classList.remove('hidden');

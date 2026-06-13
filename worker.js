@@ -1931,7 +1931,7 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
 <body class="app-shell font-sans min-h-screen overflow-hidden">
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
 
-    <div id="booting-panel" class="surface-card fixed left-1/2 top-1/2 w-[calc(100%-32px)] max-w-sm -translate-x-1/2 -translate-y-1/2 p-6 text-center text-muted fade-in">
+    <div id="booting-panel" class="hidden surface-card fixed left-1/2 top-1/2 w-[calc(100%-32px)] max-w-sm -translate-x-1/2 -translate-y-1/2 p-6 text-center text-muted fade-in">
         <div class="auth-shell-head items-center text-center mb-0">
             <span class="auth-shell-badge">Cloud Mail</span>
             <div class="text-strong text-lg font-semibold">\u6B63\u5728\u68C0\u67E5\u767B\u5F55\u72B6\u6001</div>
@@ -1955,7 +1955,7 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
             <div id="invite-wrap" class="hidden">
                 <input type="text" id="invite-code" class="field" placeholder="\u9080\u8BF7\u7801">
             </div>
-            ${bypassTurnstile ? '<div class="py-2 px-3 rounded-lg border border-amber-800 bg-amber-900/30 text-amber-300 text-xs">Turnstile \u5DF2\u4E34\u65F6\u7ED5\u8FC7\uFF0C\u4EC5\u7528\u4E8E\u6392\u969C\uFF1B\u6062\u590D\u540E\u8BF7\u7ACB\u5373\u5173\u95ED TURNSTILE_BYPASS\u3002</div>' : `<div class="cf-turnstile flex justify-center py-2" data-sitekey="${sitekey}"></div>`}
+            '<div class="cf-turnstile flex justify-center py-2" data-sitekey="' + sitekey + '"></div>'
             <button type="submit" id="submit-btn" class="btn-primary w-full justify-center font-medium active:scale-[0.99]">\u767B\u5F55</button>
         </form>
     </div>
@@ -2501,22 +2501,12 @@ function renderRouteList(routes, availableDestinations, routeDestWidthCh, totalR
         function bootApp() {
             setupRouteSearch();
             window.addEventListener('resize', syncInboxResponsiveView);
-            setUserScreen('boot');
-            var finished = false;
-            var safetyTimer = setTimeout(function() {
-                if (finished) return;
-                finished = true;
-                setUserScreen('auth');
-            }, 12000);
             (async function() {
                 try {
                     await withTimeout(loadPublicConfig(), 4000).catch(function() {
                         updateInviteField();
                     });
                     var session = await withTimeout(fetch('/api/check-session'), 10000);
-                    if (finished) return;
-                    finished = true;
-                    clearTimeout(safetyTimer);
                     if (session && session.ok) {
                         setUserScreen('dashboard');
                         loadDashboard();
@@ -2524,9 +2514,6 @@ function renderRouteList(routes, availableDestinations, routeDestWidthCh, totalR
                         setUserScreen('auth');
                     }
                 } catch (_) {
-                    if (finished) return;
-                    finished = true;
-                    clearTimeout(safetyTimer);
                     setUserScreen('auth');
                 }
             })();
@@ -3230,7 +3217,7 @@ body.admin-page.dashboard-mode{padding:0!important}
 <body class="admin-page auth-mode app-shell font-sans min-h-screen p-4 flex justify-center items-center">
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
 
-    <div id="booting-panel" class="surface-card w-full max-w-[26rem] p-8 text-center text-muted fade-in">
+    <div id="booting-panel" class="hidden surface-card w-full max-w-[26rem] p-8 text-center text-muted fade-in">
         <div class="auth-shell-head items-center text-center mb-0 mx-auto">
             <span class="auth-shell-badge">\u7BA1\u7406\u5DE5\u4F5C\u533A</span>
             <div class="text-strong text-lg font-semibold">\u6B63\u5728\u68C0\u67E5\u767B\u5F55\u72B6\u6001</div>
@@ -3248,7 +3235,7 @@ body.admin-page.dashboard-mode{padding:0!important}
         <form onsubmit="handleAdminLogin(event)" class="space-y-4">
             <input type="text" id="admin-user" class="field" placeholder="\u7BA1\u7406\u5458\u8D26\u53F7" required>
             <input type="password" id="admin-pass" class="field" placeholder="\u767B\u5F55\u5BC6\u7801" required>
-            ${bypassTurnstile ? '<div class="py-2 px-3 rounded-lg border border-amber-800 bg-amber-900/30 text-amber-300 text-xs">Turnstile \u5DF2\u4E34\u65F6\u7ED5\u8FC7\uFF0C\u4EC5\u7528\u4E8E\u6392\u969C\uFF1B\u6062\u590D\u540E\u8BF7\u7ACB\u5373\u5173\u95ED TURNSTILE_BYPASS\u3002</div>' : `<div class="cf-turnstile flex justify-center py-2" data-sitekey="${sitekey}"></div>`}
+            '<div class="cf-turnstile flex justify-center py-2" data-sitekey="' + sitekey + '"></div>'
             <button type="submit" class="btn-primary w-full justify-center font-bold py-3 transition-all">\u89E3\u9501</button>
         </form>
     </div>
@@ -3271,7 +3258,7 @@ body.admin-page.dashboard-mode{padding:0!important}
                 </div>
             </div>
         </div>
-        ${bypassTurnstile ? '<div class="px-6 py-3 border-b border-amber-700 bg-amber-900/40 text-amber-200 text-sm">\u5F53\u524D TURNSTILE_BYPASS=true\uFF1A\u4EBA\u673A\u9A8C\u8BC1\u5DF2\u7ED5\u8FC7\uFF0C\u4EC5\u9650\u6392\u969C\uFF0C\u8BF7\u5728\u6062\u590D\u540E\u7ACB\u5373\u5173\u95ED\u3002</div>' : ""}
+        
 
         <div class="px-4 md:px-6 py-4 overflow-y-auto flex-1 surface-page">
             <div id="view-domains" class="gmail-admin-grid gmail-admin-canvas">
@@ -3512,17 +3499,6 @@ body.admin-page.dashboard-mode{padding:0!important}
         watchSystemThemeChange();
 
         function bootAdmin() {
-            var booting = document.getElementById('booting-panel');
-            var loginPanel = document.getElementById('login-panel');
-            var dashboardPanel = document.getElementById('dashboard-panel');
-            var bootingError = document.getElementById('booting-error');
-            setAdminScreen('boot');
-            if (bootingError) bootingError.classList.add('hidden');
-            var safetyTimer = setTimeout(function() {
-                if (booting && !booting.classList.contains('hidden')) {
-                    setAdminScreen('login');
-                }
-            }, 12000);
             (async function() {
                 try {
                     var ac = new AbortController();
@@ -3533,7 +3509,6 @@ body.admin-page.dashboard-mode{padding:0!important}
                     } finally {
                         clearTimeout(to);
                     }
-                    clearTimeout(safetyTimer);
                     if (session.ok) {
                         setAdminScreen('dashboard');
                         loadConfigs(); syncDomains(); loadUsers(1); loadInvites();
@@ -3541,9 +3516,7 @@ body.admin-page.dashboard-mode{padding:0!important}
                         setAdminScreen('login');
                     }
                 } catch (_) {
-                    clearTimeout(safetyTimer);
                     setAdminScreen('login');
-                    if (bootingError) bootingError.classList.remove('hidden');
                 }
             })();
         }
@@ -3577,10 +3550,7 @@ body.admin-page.dashboard-mode{padding:0!important}
         async function loadConfigs(){
             const d = await (await fetch(basePath+'/config')).json();
             renderStorageStatus(d.storage || {});
-            if (d.security && d.security.turnstileBypass && !bypassWarned) {
-                bypassWarned = true;
-                showT('\u5B89\u5168\u544A\u8B66\uFF1ATURNSTILE_BYPASS=true\uFF0C\u5F53\u524D\u4EBA\u673A\u9A8C\u8BC1\u5DF2\u7ED5\u8FC7\uFF0C\u4EC5\u9650\u6392\u969C\u3002', true);
-            }
+
             const rows = (d.data || []).sort(function(a,b){
                 var ai = cfgOrder.indexOf(a.key), bi = cfgOrder.indexOf(b.key);
                 return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);

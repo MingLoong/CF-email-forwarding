@@ -1503,7 +1503,7 @@ body{margin:0;background:var(--bg-page);color:var(--text-strong);font-family:"Go
 .gmail-admin-tab-group{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
 .gmail-admin-tabs{display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none}
 .gmail-admin-grid{display:grid;gap:.82rem}
-.gmail-admin-grid-wide{display:grid;gap:.82rem}
+.gmail-admin-stack{display:grid;gap:.82rem}
 .gmail-admin-domain-stack{gap:0;background:#fff;border:1px solid var(--border-subtle);border-radius:.44rem;overflow:hidden}
 .gmail-admin-domain-stack>.gmail-content-card{border:0!important;border-radius:0!important;box-shadow:none!important}
 .gmail-admin-domain-stack>.gmail-content-card+.gmail-content-card{border-top:1px solid var(--border-subtle)!important}
@@ -1808,8 +1808,8 @@ var renderPostThemeOverrides = /* @__PURE__ */ __name(() => `<style>
 #booting-panel,#auth-panel,#login-panel,#dashboard-panel{background:var(--bg-surface)!important;border-color:var(--border-subtle)!important;box-shadow:var(--shadow-panel)!important}
 #dashboard-panel{border-radius:var(--radius-shell)!important;box-shadow:none!important}
 #dashboard-panel>.bg-gray-900/80,#dashboard-panel>.bg-gray-950,#dashboard-panel>.bg-gray-900{background:rgba(255,255,255,.92)!important;border-color:var(--border-subtle)!important;backdrop-filter:blur(10px)}
-.dashboard-nav,.settings-nav,#nav-domains,#nav-invites,#nav-users{background:transparent!important;color:var(--text-muted)!important;border-color:transparent!important}
-.dashboard-nav:hover,.settings-nav:hover,#nav-domains:hover,#nav-invites:hover,#nav-users:hover{color:var(--text-strong)!important;background:#edf1f4!important;border-color:transparent!important}
+.dashboard-nav,.settings-nav,#nav-domains,#nav-settings,#nav-invites,#nav-users{background:transparent!important;color:var(--text-muted)!important;border-color:transparent!important}
+.dashboard-nav:hover,.settings-nav:hover,#nav-domains:hover,#nav-settings:hover,#nav-invites:hover,#nav-users:hover{color:var(--text-strong)!important;background:#edf1f4!important;border-color:transparent!important}
 .dashboard-nav.bg-gray-800,.settings-nav.text-emerald-300,#nav-domains.text-emerald-400,#nav-invites.text-emerald-400,#nav-users.text-emerald-400{color:var(--accent-primary)!important}
 .dashboard-nav.bg-gray-800,.dashboard-nav.nav-link-active,.settings-nav.border-emerald-400,.settings-nav.tab-link-active,#nav-domains.text-emerald-400,#nav-invites.text-emerald-400,#nav-users.text-emerald-400{background:#e8f0fe!important;border-color:transparent!important}
 .admin-nav{display:inline-flex;align-items:center;justify-content:center;padding:.72rem 1rem;border:1px solid transparent;border-radius:.78rem;color:var(--text-muted)!important;background:transparent!important;font-weight:600;min-height:2.65rem}
@@ -3221,7 +3221,7 @@ body.admin-page.dashboard-mode{padding:0!important}
 .gmail-admin-topbar{align-items:flex-start!important}
 .gmail-admin-tabs{width:100%;border-radius:1rem!important}
 .gmail-admin-tab-group{align-items:stretch!important}
-#view-domains .gmail-admin-grid-wide{grid-template-columns:minmax(0,1fr)!important}
+#view-domains .gmail-admin-stack{grid-template-columns:minmax(0,1fr)!important}
 }
     
     #booting-panel.hidden,#auth-panel.hidden,#login-panel.hidden,#dashboard-panel.hidden{display:none!important}</style>
@@ -3262,11 +3262,12 @@ body.admin-page.dashboard-mode{padding:0!important}
                 </div>
                 <div class="gmail-admin-tab-group">
                     <div class="gmail-admin-tabs">
-                        <button onclick="nav('domains')" id="nav-domains" class="admin-nav admin-nav-active">\u57DF\u540D\u4E0E\u5BB9\u91CF</button>
+                        <button onclick="nav('domains')" id="nav-domains" class="admin-nav admin-nav-active">\u57DF\u540D</button>
+                        <button onclick="nav('settings')" id="nav-settings" class="admin-nav">\u8BBE\u7F6E</button>
                         <button onclick="nav('invites')" id="nav-invites" class="admin-nav">\u9080\u8BF7\u7801</button>
                         <button onclick="nav('users')" id="nav-users" class="admin-nav">\u7528\u6237</button>
                     </div>
-                    <button onclick="logout()" class="btn-secondary text-sm whitespace-nowrap">\u9501\u5B9A\u9000\u51FA</button>
+                    <button onclick="logout()" class="btn-secondary text-sm whitespace-nowrap">\u9000\u51FA\u767B\u5F55</button>
                 </div>
             </div>
         </div>
@@ -3274,7 +3275,7 @@ body.admin-page.dashboard-mode{padding:0!important}
 
         <div class="px-4 md:px-6 py-4 overflow-y-auto flex-1 surface-page">
             <div id="view-domains" class="gmail-admin-grid gmail-admin-canvas">
-                <div class="gmail-admin-grid-wide gmail-admin-stack gmail-admin-domain-stack">
+                <div class="gmail-admin-stack gmail-admin-domain-stack">
                     <div class="gmail-content-card">
                         <div class="gmail-panel-header px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div>
@@ -3302,13 +3303,17 @@ body.admin-page.dashboard-mode{padding:0!important}
                         </div>
                     </div>
                 </div>
-                <div class="gmail-content-card">
+                
+            </div>
+
+            
+            <div id="view-settings" class="hidden gmail-admin-grid gmail-admin-canvas">
+<div class="gmail-content-card">
                     <div class="gmail-panel-header px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <h3 class="gmail-admin-section-title">\u5BB9\u91CF\u4E0E\u89C4\u5219</h3>
                             <p class="gmail-admin-section-copy mt-1">\u7EDF\u4E00\u63A7\u5236\u6CE8\u518C\u3001\u5BB9\u91CF\u3001\u6709\u6548\u671F\u548C\u9644\u4EF6\u9650\u5236\uFF0C\u8BA9\u6574\u4E2A\u90AE\u4EF6\u5DE5\u4F5C\u533A\u5728\u9AD8\u5CF0\u65F6\u4E5F\u66F4\u7A33\u3002</p>
                         </div>
-                        <button onclick="runCleanup()" class="btn-secondary text-xs px-3 py-1.5 whitespace-nowrap">\u7ACB\u5373\u6E05\u7406\u8FC7\u671F\u6570\u636E</button>
                     </div>
                     <div class="gmail-content-body space-y-4">
                         <div id="r2-storage-status"></div>
@@ -3485,7 +3490,7 @@ body.admin-page.dashboard-mode{padding:0!important}
             box.innerHTML = '<div class="gmail-content-card"><div class="gmail-content-body py-4">' +
                 '<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">' +
                   '<div><div class="text-sm font-bold text-strong">\u7AD9\u5185\u9644\u4EF6 R2 \u7528\u91CF</div><div class="text-xs text-soft mt-1">\u5F53\u524D\u7CFB\u7EDF\u9644\u4EF6\u5360\u7528 ' + escapeHTML(formatStorageSize(used)) + ' / ' + escapeHTML(limitText) + '\uFF0C\u5171 ' + escapeHTML(storage.attachmentCount || 0) + ' \u4E2A\u9644\u4EF6</div></div>' +
-                  '<span class="text-xs px-2.5 py-1 rounded-lg border ' + boundClass + '">' + boundLabel + '</span>' +
+                  '<div class="flex items-center gap-1.5 flex-shrink-0"><span class="text-xs px-2.5 py-1 rounded-lg border ' + boundClass + '">' + boundLabel + '</span><button onclick="runCleanup()" class="btn-secondary text-xs px-3 py-1.5 whitespace-nowrap">\u7ACB\u5373\u6E05\u7406\u8FC7\u671F\u6570\u636E</button></div>' +
                 '</div>' +
                 '<div class="h-2 surface-inset rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:' + percent.toFixed(1) + '%"></div></div>' +
                 '<div class="mt-2 text-xs text-soft">\u5360\u6BD4 ' + percent.toFixed(1) + '%</div>' +
@@ -3549,11 +3554,12 @@ body.admin-page.dashboard-mode{padding:0!important}
             bootAdmin();
         }
         function nav(tab){
-            ['domains','invites','users'].forEach(function(name){
+            ['domains','settings','invites','users'].forEach(function(name){
                 document.getElementById('view-'+name).style.display = tab===name?'block':'none';
                 document.getElementById('nav-'+name).className = tab===name?'admin-nav admin-nav-active':'admin-nav';
             });
             if(tab === 'invites') loadInvites();
+            if(tab === 'settings') loadConfigs();
         }
         async function handleAdminLogin(e){
             e.preventDefault();

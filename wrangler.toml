@@ -4,14 +4,15 @@ compatibility_date = "2025-04-01"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "email-router-db"
-database_id = "83041d92-d1e9-40cc-951a-b34b8fd7be41"
+database_name = "<D1_DATABASE_NAME>"
+database_id = "<D1_DATABASE_ID>"
 
 [[r2_buckets]]
 binding = "INBOUND_ATTACHMENTS"
-bucket_name = "cf-email-forwarding-attachments"
+bucket_name = "<R2_BUCKET_NAME>"
 
 [vars]
-TURNSTILE_SITEKEY = "0x4AAAAAADM20OKQdbxtArVM"
+TURNSTILE_SITEKEY = "<TURNSTILE_SITEKEY>"
 ADMIN_PATH = "/admin"
 ADMIN_USERNAME = "admin"
+EMAIL_WORKER_NAME = "email"

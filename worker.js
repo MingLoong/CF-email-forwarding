@@ -1,4 +1,4 @@
-﻿var __defProp = Object.defineProperty;
+var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
 // worker.js
@@ -1955,7 +1955,7 @@ main.bg-gray-950,#dashboard-section-security,#dashboard-section-routes,#dashboar
             <div id="invite-wrap" class="hidden">
                 <input type="text" id="invite-code" class="field" placeholder="\u9080\u8BF7\u7801">
             </div>
-            '<div class="cf-turnstile flex justify-center py-2" data-sitekey="' + sitekey + '"></div>'
+            <div class="cf-turnstile flex justify-center py-2" data-sitekey="${sitekey}"></div>
             <button type="submit" id="submit-btn" class="btn-primary w-full justify-center font-medium active:scale-[0.99]">\u767B\u5F55</button>
         </form>
     </div>
@@ -3235,7 +3235,7 @@ body.admin-page.dashboard-mode{padding:0!important}
         <form onsubmit="handleAdminLogin(event)" class="space-y-4">
             <input type="text" id="admin-user" class="field" placeholder="\u7BA1\u7406\u5458\u8D26\u53F7" required>
             <input type="password" id="admin-pass" class="field" placeholder="\u767B\u5F55\u5BC6\u7801" required>
-            '<div class="cf-turnstile flex justify-center py-2" data-sitekey="' + sitekey + '"></div>'
+            <div class="cf-turnstile flex justify-center py-2" data-sitekey="${sitekey}"></div>
             <button type="submit" class="btn-primary w-full justify-center font-bold py-3 transition-all">\u89E3\u9501</button>
         </form>
     </div>
